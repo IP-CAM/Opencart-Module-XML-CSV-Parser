@@ -1,4 +1,6 @@
 <?php
+set_time_limit(900);
+
 abstract class Parser
 {
 	protected $logOut;
@@ -60,7 +62,7 @@ abstract class Parser
             fputcsv($handle, explode($this->delLim, $value), $this->delLim); 
         }
         fclose($handle);
-		echo 'Файл '.$this->outFile.' успешно создан.';
+		//echo 'Файл '.$this->outFile.' успешно создан.';
     }
 	
 	public function saveXML(array $content) 
@@ -93,19 +95,20 @@ abstract class Parser
 		fwrite($handle, $doc->saveXML());
 		fclose($handle);
 		
-		echo 'Файл '.$this->outFile.' успешно создан.';
+		//echo 'Файл '.$this->outFile.' успешно создан.';
     }
 	
 	public function createLog(string $file, string $type) 
 	{
-		$put = array
+		if(file_exists('logs/'.$file)) $put = json_decode(file_get_contents('logs/'.$file), true);
+		$put[] = array
 		(
 		  'file' => $this->outFile,
 		  'time' => date("H:i"),
 		  'date' => date("d.m.Y"),
 		  'type' => $type
 		);
-		file_put_contents('logs/'.$file, json_encode($put)."\r\n", FILE_APPEND | LOCK_EX);
+		file_put_contents('logs/'.$file, json_encode($put), LOCK_EX);
     }
 	
 	public function createFile(bool $type = true, bool $logging = true)
@@ -119,5 +122,8 @@ abstract class Parser
 		
 		if(!$type) $this->saveCsv($this->getContent());
 		else $this->saveXml($this->getContent());
+		
+		header('Location: ../index.php');
 	}
 }	
+?>

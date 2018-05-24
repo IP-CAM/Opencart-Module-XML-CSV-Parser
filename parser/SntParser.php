@@ -130,3 +130,4 @@ class SntParser extends Parser
 
 $file = new SntParser('snt');
 $file->createFile();
+?>

@@ -95,3 +95,4 @@ class ShopntoysParser extends Parser
 
 $file = new ShopntoysParser('shopntoys');
 $file->createFile();
+?>

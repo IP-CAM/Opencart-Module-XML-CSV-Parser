@@ -62,8 +62,10 @@ class SntPriceParser extends Parser
                 break;
             }
 		}
+		if($this->logOut) $this->createLog('snt.log', 'Цены');
 	}
 }
 
 $file = new SntPriceParser('snt_price');
 $file->createFile();
+?>

@@ -29,8 +29,10 @@ class ShopntoysPriceParser extends Parser
             $this->setContent($products[$i]->prices->price[1]->value, $i);
             $this->setContent($products[$i]->count, $i);
 		}
+		if($this->logOut) $this->createLog('shopntoys.log', 'Цены');
 	}
 }
 
 $file = new ShopntoysPriceParser('shopntoys_price');
 $file->createFile();
+?>
