@@ -5,10 +5,10 @@ class ShopntoysPriceParser extends Parser
 {
 	private $productFile;
 	
-	public function __construct($params) 
+	public function __construct($params)
 	{
-        parent::__construct($params);
-    }
+		parent::__construct($params);
+	}
 	
 	protected function initializeParser()
 	{
@@ -18,16 +18,16 @@ class ShopntoysPriceParser extends Parser
 	public function parserFunction()
 	{
 		$products = $this->getJsonXml($this->productFile)->stock->product;
-
+		
 		$this->setContent('Категория|Название|Sku|Цена|Количество', -1);
 		
 		for($i = 0; $i < count($products); $i++)
 		{
-            $this->setContent('-', $i);
-            $this->setContent($products[$i]->name, $i);
-            $this->setContent($products[$i]->sku, $i);
-            $this->setContent($products[$i]->prices->price[1]->value, $i);
-            $this->setContent($products[$i]->count, $i);
+			$this->setContent('-', $i);
+			$this->setContent($products[$i]->name, $i);
+			$this->setContent($products[$i]->sku, $i);
+			$this->setContent($products[$i]->prices->price[1]->value, $i);
+			$this->setContent($products[$i]->count, $i);
 		}
 		if($this->logOut) $this->createLog('shopntoys.log', 'Цены');
 	}
