@@ -10,26 +10,35 @@ abstract class Parser
 	private $arrayList;
 	
 	abstract protected function initializeParser();
+	
 	abstract public function parserFunction();
 	
 	public function __construct(string $inputFile, string $delLimiter = '|')
-    {
-        $this->initializeParser();
-        $this->delLim = $delLimiter;
+	{
+		$this->initializeParser();
+		$this->delLim  = $delLimiter;
 		$this->outFile = date("H.i.s").'_'.date("d-m-Y").'_'.$inputFile;
-    }
-
-    public function deleteSpecialChar($text, bool $type = false)
-    {
-        if(is_object($text) || !strlen($text)) return '-';
+	}
+	
+	public function deleteSpecialChar($text, bool $type = false)
+	{
+		if(is_object($text) || !strlen($text)) return '-';
 		if($type) $text = str_replace($this->delLim, ';', $text);
 		else
 		{
 			$text = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $text);
-			$text = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $text);
+			$text = str_replace([
+				"\r\n",
+				"\r",
+				"\n",
+				"\t",
+				'  ',
+				'    ',
+				'    '
+			], '', $text);
 		}
-        return $text;
-    }
+		return $text;
+	}
 	
 	public function getJsonXml($xml)
 	{
@@ -42,43 +51,43 @@ abstract class Parser
 	}
 	
 	public function getContent()
-    {
-        return $this->arrayList;
-    }
+	{
+		return $this->arrayList;
+	}
 	
 	public function setContent($string, int $index)
 	{
-		$index = $index+1;
+		$index = $index + 1;
 		if(is_object($string) || !strlen($string)) $this->arrayList[$index] = $this->arrayList[$index].'-'.$this->delLim;
 		else $this->arrayList[$index] = $this->arrayList[$index].$string.$this->delLim;
 	}
 	
-	public function saveCsv(array $content) 
+	public function saveCsv(array $content)
 	{
-        $handle = fopen($this->outFile, 'w'); 
-        foreach($content as $value) 
-		{ 
+		$handle = fopen($this->outFile, 'w');
+		foreach($content as $value)
+		{
 			$value = $this->deleteSpecialChar($value);
-            fputcsv($handle, explode($this->delLim, $value), $this->delLim); 
-        }
-        fclose($handle);
+			fputcsv($handle, explode($this->delLim, $value), $this->delLim);
+		}
+		fclose($handle);
 		//echo 'Файл '.$this->outFile.' успешно создан.';
-    }
+	}
 	
-	public function saveXML(array $content) 
+	public function saveXML(array $content)
 	{
-		$doc = new DOMDocument('1.0', 'UTF-8');
+		$doc               = new DOMDocument('1.0', 'UTF-8');
 		$doc->formatOutput = true;
-
+		
 		$root = $doc->createElement('rows');
 		$root = $doc->appendChild($root);
 		
 		$headers = explode($this->delLim, $content[0]);
 		unset($content[0]);
 		
-		foreach($content as $row) 
+		foreach($content as $row)
 		{
-			$row = explode($this->delLim, $this->deleteSpecialChar($row));
+			$row       = explode($this->delLim, $this->deleteSpecialChar($row));
 			$container = $doc->createElement('row');
 			foreach($headers as $i => $header)
 			{
@@ -96,20 +105,19 @@ abstract class Parser
 		fclose($handle);
 		
 		//echo 'Файл '.$this->outFile.' успешно создан.';
-    }
+	}
 	
-	public function createLog(string $file, string $type) 
+	public function createLog(string $file, string $type)
 	{
 		if(file_exists('logs/'.$file)) $put = json_decode(file_get_contents('logs/'.$file), true);
-		$put[] = array
-		(
-		  'file' => $this->outFile,
-		  'time' => date("H:i"),
-		  'date' => date("d.m.Y"),
-		  'type' => $type
-		);
+		$put[] = [
+			'file' => $this->outFile,
+			'time' => date("H:i"),
+			'date' => date("d.m.Y"),
+			'type' => $type
+		];
 		file_put_contents('logs/'.$file, json_encode($put), LOCK_EX);
-    }
+	}
 	
 	public function createFile(bool $type = true, bool $logging = true)
 	{
@@ -125,5 +133,6 @@ abstract class Parser
 		
 		header('Location: ../index.php');
 	}
-}	
+}
+
 ?>
